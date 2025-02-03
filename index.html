@@ -183,7 +183,7 @@
         });
 
         map.on('data', 'listing_points', (e) => {
-        const totalRecord = e.features[0].length;
+        const totalRecords = e.features.length;
 
         // Update an existing HTML element
         document.getElementById('record-count').innerText = `Total Listings: ${totalRecords}`;
