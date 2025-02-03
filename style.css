@@ -14,14 +14,14 @@
 
 #record-count {
     position:absolute; 
-    top:10px; 
-    left:50%; 
+    bottom:10px; 
+    right:50%; 
     transform:translateX(-50%); 
-    background:rgba(0, 0, 0, 0.7); 
+    background:rgba(0, 0, 0, 0.6); 
     padding:8px; 
     border-radius:5px; 
     box-shadow:0 2px 5px rgba(0,0,0,0.2); 
-    color: #f94b4b; 
+    color: #ffffff; 
     font: 400 17px/22px 'Source Sans Pro', 'Helvetica Neue', Sans-serif;
     font-weight:bold;
 }
