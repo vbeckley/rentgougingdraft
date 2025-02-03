@@ -139,7 +139,7 @@
           //const perabovefmr = ((e.features[0].properties.emergencypeakprice/fmr)*100).toFixed(0);
           const pptofmrper = e.features[0].properties.peak_price_relative_to_fmr * 100;
           const formattedpptofmrper = `${Math.round(pptofmrper)}%`;
-          const ppincper = e.features[0].properties.peak_price_relative_to_fmr * 100;
+          const ppincper = e.features[0].properties.peakpriceincrease * 100;
           const formattedppincper = `${Math.round(ppincper)}%`;
           const formattedbpdate = bpdate.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
           const tenpercentrule = "Original Rent" + " (" + formattedbpdate + '): ' + '<b>' + formattedtpbPrice + '</b>' +'<br>'
