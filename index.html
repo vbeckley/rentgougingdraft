@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8' />
+  <title>LA Rent Gouging</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
+  <script src='https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.0.1/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://npmcdn.com/csv2geojson@latest/csv2geojson.js'></script>
+  <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+  <link
+    rel="stylesheet"
+    href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.4.2/mapbox-gl-geocoder.css"
+    type="text/css"
+  />
+  <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+  <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+  body { margin: 0; padding: 0; }
+  #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</head>
+  
+<body>
+
+  <div id='map'></div>
+  <script>
+
+    var transformRequest = (url, resourceType) => {
+      var isMapboxRequest =
+        url.slice(8, 22) === "api.mapbox.com" ||
+        url.slice(10, 26) === "tiles.mapbox.com";
+      return {
+        url: isMapboxRequest
+          ? url.replace("?", "?pluginName=sheetMapper&")
+          : url
+      };
+    };
+    
+    mapboxgl.accessToken = 'pk.eyJ1IjoidmljdG9yaWFiZWNrbGV5IiwiYSI6ImNsMXlpa3J6ZjBjeDgzY28zb2lmYm1kejIifQ.iovH6zCr8nvi07wE0SQIdA'; //Mapbox token 
+    var map = new mapboxgl.Map({
+      container: 'map', // container id
+      style: "mapbox://styles/mapbox/dark-v11",
+      center: [-118.251454,34.0360767], // starting position [lng, lat]
+      zoom: 11,// starting zoom
+      transformRequest: transformRequest
+    });
+
+    map.on('load', () => {
+  
+          //////////////////CSV to GEOJSON////////////////// 
+        $.ajax({
+          type: "GET",
+          url:
+            "https://vbeckley.github.io/rentgouging/Zillow_Data_1_31.csv",
+          dataType: "text",
+          success: function(csvData) {
+            makeGeoJSON(csvData);
+          }
+        });
+      });
+      //////////////////SOURCE///////////////
+
+        function makeGeoJSON(csvData) {
+        csv2geojson.csv2geojson(
+          csvData,
+          {
+            latfield: "latitude",
+            lonfield: "longitude",
+            delimiter: ","
+          },
+
+          function(err, listings) {
+            map.addSource("listings", {
+              type: "geojson",
+              data: listings
+            });
+
+            map.addLayer({
+              id: "listing_points",
+              type: "circle",
+              //    maxzoom: 10,
+              source: "listings",
+              layout: {},
+              filter: [
+                "all",
+               ["match",
+                  ["get", "wasevergouged"],
+                  ["TRUE"],
+                  true,
+                  false]],
+              paint: {
+                "circle-color": '#f94b4b',
+                "circle-radius": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  1,
+                  1,
+                  30,
+                  12
+                ],
+                "circle-stroke-color": '#434344',
+                "circle-stroke-width": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  10,
+                  1,
+                  14,
+                  1
+                ]
+              }
+            });
+
+ 
+        ///////////////////POPUP///////////////////////////////////////
+        // When a click event occurs on a feature in the polygon fill layer,
+        // open a popup at the location of the click, with description
+        // HTML from the click event's properties.
+        map.on('click', 'listing_points', (e) => {
+          const ppdate = new Date(e.features[0].properties.peakpricedate);
+          const formattedppdate = ppdate.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
+          const bpdate = new Date(e.features[0].properties.basepricedate);
+          var bedroomtype = e.features[0].properties.bedrooms;
+                if (bedroomtype == 0){ 
+                  bedroomtype = "Studio ";
+                } else { 
+                  bedroomtype = bedroomtype + " Bed ";
+                }
+          const fmr = e.features[0].properties.priceceiling/1.6;
+          //const perabovefmr = ((e.features[0].properties.emergencypeakprice/fmr)*100).toFixed(0);
+          const formattedbpdate = bpdate.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
+          const tenpercentrule = "Original Rent" + " (" + formattedbpdate + '): ' + '<b>' + e.features[0].properties.tenpercentbaseprice + '</b>' +'<br>'
+                      + "Peak Listed Rent" + " (" + formattedppdate + '): ' + '<b>' + e.features[0].properties.emergencypeakprice + '</b>' + '<br>'
+                      + "<b>" + Math.round(parseFloat(e.features[0].properties.peakpriceincrease)) + "%" + "</b>" + " Percent Increase";
+          const fmrrule = "Not listed previous to 1/7/25" + '<br>' +
+                      "Listed Rent" + " (" + formattedppdate + '): ' + '<b>' + e.features[0].properties.emergencypeakprice + '</b>' + '<br>'
+                      + "<b>" + Math.round(parseFloat(e.features[0].properties.peak_price_relative_to_fmr)) + '%' + "</b>" + " Percent Above Fair Market Rent";
+          var rule = e.features[0].properties.gougingrule;
+                  if (rule != "fmr") {
+                    rule = tenpercentrule;
+                  } else {
+                    rule = fmrrule;
+                  }
+          const url = e.features[0].properties.listingurl;
+          const link = `<a href="${url}" target="_blank" style="color: white;">${e.features[0].properties.street_address}</a>`;
+          const add_link = `<h3>` +  link + `</h3>`;
+          var description = add_link + 
+                 `<h4>` + bedroomtype +
+                  e.features[0].properties.home_type +
+                 '<br>' + rule
+                + `</h4>`;
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(description)
+                .addTo(map);
+        }); 
+
+
+        // Change the cursor to a pointer when
+        // the mouse is over the states layer.
+        map.on('mouseenter', 'listing_points', () => {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+
+        // Change the cursor back to a pointer
+        // when it leaves the states layer.
+        map.on('mouseleave', 'All Priority Buildings', () => {
+            map.getCanvas().style.cursor = '';
+        });
+});
+        }
+    
+    const nav = new mapboxgl.NavigationControl({
+        showCompass: false
+    });
+    map.addControl(nav, 'bottom-left');
+    
+  </script>
+
+</body>
+
+</html>
