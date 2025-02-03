@@ -182,27 +182,21 @@
             map.getCanvas().style.cursor = '';
         });
 
-      map.on('data', (e) => {
+     map.on('data', (e) => {
         if (e.sourceId === 'listings' && e.isSourceLoaded) {
             const source = map.getSource('listings');
-            const layer = map.getLayer('listing-points'); // Get the layer
+            const allFeatures = source._data.features;
     
-            if (source && source._data && layer) {
-                const allFeatures = source._data.features;
-                const filter = map.getFilter('listing-points'); // Get the layer's filter
+            // Manually apply the "wasevergouged" filter
+            const filteredFeatures = allFeatures.filter(feature => {
+                const wasevergouged = feature.properties.wasevergouged;
+                return wasevergouged === "TRUE";
+            });
     
-                let filteredFeatures = allFeatures;
+            const totalRecords = filteredFeatures.length;
     
-                // If a filter exists, apply it manually
-                if (filter) {
-                    filteredFeatures = allFeatures.filter(feature => map.queryRenderedFeatures({ layers: ['listing-points'], filter }).includes(feature));
-                }
-    
-                const totalRecords = filteredFeatures.length;
-    
-                // Update the HTML element
-                document.getElementById('record-count').innerText = `Total Listings: ${totalRecords}`;
-            }
+            // Update the HTML element
+            document.getElementById('record-count').innerText = `Total Listings: ${totalRecords}`;
         }
     });
 });
