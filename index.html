@@ -183,16 +183,28 @@
         });
 
       map.on('data', (e) => {
-          if (e.sourceId === 'listings' && e.isSourceLoaded) {
+        if (e.sourceId === 'listings' && e.isSourceLoaded) {
             const source = map.getSource('listings');
-           if (source && source._data) {
-            const totalRecords = source._data.features.length;
-
-            // Update an existing HTML element
-            document.getElementById('record-count').innerText = `Total Listings: ${totalRecords}`;
-              }
-          }
-      });
+            const layer = map.getLayer('listing-points'); // Get the layer
+    
+            if (source && source._data && layer) {
+                const allFeatures = source._data.features;
+                const filter = map.getFilter('listing-points'); // Get the layer's filter
+    
+                let filteredFeatures = allFeatures;
+    
+                // If a filter exists, apply it manually
+                if (filter) {
+                    filteredFeatures = allFeatures.filter(feature => map.queryRenderedFeatures({ layers: ['listing-points'], filter }).includes(feature));
+                }
+    
+                const totalRecords = filteredFeatures.length;
+    
+                // Update the HTML element
+                document.getElementById('record-count').innerText = `Total Listings: ${totalRecords}`;
+            }
+        }
+    });
 });
         }
     
