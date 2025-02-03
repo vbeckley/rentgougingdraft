@@ -27,7 +27,7 @@
 <body>
 
   <div id='map'></div>
-  <div id="record-count"></div>
+  
   
   <script>
 
@@ -50,7 +50,7 @@
       zoom: 11,// starting zoom
       transformRequest: transformRequest
     });
-
+    
     map.on('load', () => {
   
           //////////////////CSV to GEOJSON////////////////// 
@@ -117,6 +117,7 @@
                 ]
               }
             });
+
  
         ///////////////////POPUP///////////////////////////////////////
         // When a click event occurs on a feature in the polygon fill layer,
