@@ -182,12 +182,17 @@
             map.getCanvas().style.cursor = '';
         });
 
-        map.on('data', (e) => {
-            if (e.sourceId === 'listing_points' && e.isSourceLoaded) {
-                const totalRecords = map.getSource('listing_points')._data.features.length;
-                document.getElementById('record-count').innerText = `Total Listings: ${totalRecords}`;
-            }
-        });
+      map.on('data', (e) => {
+          if (e.sourceId === 'listings' && e.isSourceLoaded) {
+            const source = map.getSource('listings');
+           if (source && source._data) {
+            const totalRecords = source._data.features.length;
+
+            // Update an existing HTML element
+            document.getElementById('record-count').innerText = `Total Listings: ${totalRecords}`;
+              }
+          }
+      });
 });
         }
     
