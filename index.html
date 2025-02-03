@@ -129,16 +129,20 @@
                 if (bedroomtype == 0){ 
                   bedroomtype = "Studio ";
                 } else { 
-                  bedroomtype = bedroomtype + " Bed ";
+                  bedroomtype = bedroomtype + " Bedroom ";
                 }
           const fmr = e.features[0].properties.priceceiling/1.6;
+          const emppprice = e.features[0].properties.emergencypeakprice;
+          const formattedemppPrice = `$${emppprice.toLocaleString()}`;
+          const tpbprice = e.features[0].properties.emergencypeakprice;
+          const formattedtpbPrice = `$${tpbprice.toLocaleString()}`;
           //const perabovefmr = ((e.features[0].properties.emergencypeakprice/fmr)*100).toFixed(0);
           const formattedbpdate = bpdate.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
-          const tenpercentrule = "Original Rent" + " (" + formattedbpdate + '): ' + '<b>' + e.features[0].properties.tenpercentbaseprice + '</b>' +'<br>'
-                      + "Peak Listed Rent" + " (" + formattedppdate + '): ' + '<b>' + e.features[0].properties.emergencypeakprice + '</b>' + '<br>'
+          const tenpercentrule = "Original Rent" + " (" + formattedbpdate + '): ' + '<b>' + formattedtpbPrice + '</b>' +'<br>'
+                      + "Peak Listed Rent" + " (" + formattedppdate + '): ' + '<b>' + formattedemppPrice + '</b>' + '<br>'
                       + "<b>" + Math.round(parseFloat(e.features[0].properties.peakpriceincrease)) + "%" + "</b>" + " Percent Increase";
           const fmrrule = "Not listed previous to 1/7/25" + '<br>' +
-                      "Listed Rent" + " (" + formattedppdate + '): ' + '<b>' + e.features[0].properties.emergencypeakprice + '</b>' + '<br>'
+                      "Listed Rent" + " (" + formattedppdate + '): ' + '<b>' + formattedemppPrice + '</b>' + '<br>'
                       + "<b>" + Math.round(parseFloat(e.features[0].properties.peak_price_relative_to_fmr)) + '%' + "</b>" + " Percent Above Fair Market Rent";
           var rule = e.features[0].properties.gougingrule;
                   if (rule != "fmr") {
