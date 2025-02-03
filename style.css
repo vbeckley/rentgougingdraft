@@ -17,7 +17,8 @@
     }
 
     .mapboxgl-popup-close-button {
-      color: #ffffff;    
+      color: #ffffff;  
+      font-size: 20px;
     }
 
     .mapboxgl-popup-content {
