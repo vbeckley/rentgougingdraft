@@ -138,14 +138,15 @@
           const tpbprice = e.features[0].properties.tenpercentbaseprice;
           const formattedtpbPrice = `$${tpbprice.toLocaleString()}`;
           //const perabovefmr = ((e.features[0].properties.emergencypeakprice/fmr)*100).toFixed(0);
+          const newcalc_fmr = e.features[0].properties.emergencypeakprice / (e.features[0].properties.priceceiling/1.6) *100
           const pptofmrper = e.features[0].properties.peak_price_relative_to_fmr * 100;
-          const formattedpptofmrper = `${Math.round(pptofmrper)}%`;
+          const formattedpptofmrper = `${Math.round(newcalc_fmr)}%`;
           const ppincper = e.features[0].properties.peakpriceincrease * 100;
           const formattedppincper = `${Math.round(ppincper)}%`;
           const formattedbpdate = bpdate.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
           const tenpercentrule = "Original Rent" + " (" + formattedbpdate + '): ' + '<b>' + formattedtpbPrice + '</b>' +'<br>'
                       + "Peak Listed Rent" + " (" + formattedppdate + '): ' + '<b>' + formattedemppPrice + '</b>' + '<br>'
-                      + "<b>" + formattedppincper + "</b>" + " Percent Increase";
+                      + "<b>" + formattedppincper + "</b>" + " Increase";
           const fmrrule = "Not listed previous to 1/7/25" + '<br>' +
                       "Listed Rent" + " (" + formattedppdate + '): ' + '<b>' + formattedemppPrice + '</b>' + '<br>'
                       + "<b>" + formattedpptofmrper + "</b>" + " Percent Above Fair Market Rent";
