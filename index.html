@@ -183,24 +183,6 @@
             map.getCanvas().style.cursor = '';
         });
 
-     map.on('data', (e) => {
-        if (e.sourceId === 'listings' && e.isSourceLoaded) {
-            const source = map.getSource('listings');
-            const allFeatures = source._data.features;
-    
-            // Manually apply the "wasevergouged" filter
-            const filteredFeatures = allFeatures.filter(feature => {
-                const wasevergouged = feature.properties.wasevergouged;
-                return wasevergouged === "TRUE";
-            });
-    
-            const totalRecords = filteredFeatures.length;
-    
-            // Update the HTML element
-            document.getElementById('record-count').innerText = `Data through 1/31`;
-          //change back to `Total Listings: ${totalRecords}` when you get back to this
-        }
-    });
 });
         }
     
