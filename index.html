@@ -126,7 +126,7 @@
           const ppdate = new Date(e.features[0].properties.peakpricedate);
           const formattedppdate = ppdate.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
           const bpdate = new Date(e.features[0].properties.basepricedate);
-          var bedroomtype = e.features[0].properties.bedrooms;
+          var bedroomtype = parseInt(e.features[0].properties.bedrooms);
                 if (bedroomtype == 0){ 
                   bedroomtype = "Studio ";
                 } else { 
