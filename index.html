@@ -56,7 +56,7 @@
         $.ajax({
           type: "GET",
           url:
-            "https://vbeckley.github.io/rentgouging/Zillow_Data_1_31.csv",
+            "https://vbeckley.github.io/rentgouging/Zillow_Rent_Gouging_Data_2_16_.csv",
           dataType: "text",
           success: function(csvData) {
             makeGeoJSON(csvData);
@@ -86,13 +86,13 @@
               //    maxzoom: 10,
               source: "listings",
               layout: {},
-              filter: [
-                "all",
-               ["match",
-                  ["get", "wasevergouged"],
-                  ["TRUE"],
-                  true,
-                  false]],
+             // filter: [
+           //     "all",
+             //  ["match",
+               //   ["get", "wasevergouged"],
+         //         ["TRUE"],
+           //       true,
+             //     false]],
               paint: {
                 "circle-color": '#f94b4b',
                 "circle-radius": [
